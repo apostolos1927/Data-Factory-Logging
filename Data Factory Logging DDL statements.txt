@@ -1,0 +1,101 @@
+CREATE SCHEMA logging;
+GO
+
+ 
+CREATE TABLE logging.PIPELINE_LOGS
+   (LogId        INT IDENTITY(1,1) NOT NULL
+  , PipelineName    VARCHAR(200) NOT NULL
+  , PipelineRunID   VARCHAR(200) NOT NULL
+  , StartTime       DATETIME2(0) NULL
+  , EndTime         DATETIME2(0) NULL
+  , DurationSeconds INT NULL
+  , Inserts         INT NULL
+  , Updates         INT NULL
+  , Deletes         INT NULL
+  , ErrorMessage    VARCHAR(4000) NULL
+  , StatusMessage   VARCHAR(300) NULL);
+
+GO
+
+
+CREATE TABLE logging.SESSION_LOGS
+   (Session_Id        INT IDENTITY(1,1) NOT NULL
+  , Created_dt     DATETIME2(0)  NULL
+  , Log_Level      VARCHAR(200)  NULL
+  , OperationName  VARCHAR(200)  NULL
+  , OperationItem  VARCHAR(200)  NULL
+  , Message VARCHAR(4000) NULL);
+GO
+
+ 
+
+CREATE   PROCEDURE logging.INSERT_LOGS
+    @PipelineName    VARCHAR(200)
+  , @PipelineRunID   VARCHAR(200)
+  , @StartTime       DATETIME2(0) = NULL
+  , @EndTime         DATETIME2(0) = NULL
+  , @DurationSeconds INT = NULL
+  , @Inserts         INT = NULL
+  , @Updates         INT = NULL
+  , @Deletes         INT = NULL
+  , @ErrorMessage    VARCHAR(500) = NULL
+  , @StatusMessage VARCHAR(50) = NULL
+AS
+SET NOCOUNT ON;
+
+ 
+
+INSERT INTO logging.PIPELINE_LOGS
+   (PipelineName
+   ,PipelineRunID
+  , StartTime
+  , EndTime
+  , DurationSeconds
+  , Inserts
+  , Updates
+  , Deletes
+  , ErrorMessage
+  , StatusMessage)
+VALUES (@PipelineName
+      , @PipelineRunID
+      , @StartTime
+      , @EndTime
+      , @DurationSeconds
+      , @Inserts
+      , @Updates
+      , @Deletes
+      , @ErrorMessage
+      , @StatusMessage);
+SELECT SCOPE_IDENTITY() AS LogId;
+GO
+ 
+
+CREATE   PROCEDURE logging.UPDATE_LOGS
+    @LogId        INT
+  , @EndTime         DATETIME2(0)
+  , @DurationSeconds INT = NULL
+  , @Inserts         INT = NULL
+  , @Updates         INT = NULL
+  , @Deletes         INT = NULL
+  , @ErrorMessage    VARCHAR(500) = NULL
+  , @StatusMessage   VARCHAR(500) = NULL
+AS
+SET NOCOUNT ON;
+
+ 
+
+ 
+
+UPDATE logging.PIPELINE_LOGS
+SET    EndTime = @EndTime
+     , DurationSeconds = @DurationSeconds
+     , Inserts = @Inserts
+     , Updates = @Updates
+     , Deletes = @Deletes
+     , ErrorMessage = @ErrorMessage
+     , StatusMessage = @StatusMessage
+WHERE  LogId = @LogId;
+GO
+
+
+
